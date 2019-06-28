@@ -16,13 +16,11 @@ import android.view.ViewGroup;
 
 public class PinchZoomPan extends View {
 
-
     private static final int INVALID_POINTER_ID = -1;
-    private final static float mMinZoom = 0.3f;
+    private final static float mMinZoom = 0.2f;
     private final static float mMaxZoom = 5.0f;
     //Paint objects
     public ViewGroup.LayoutParams params;
-    private boolean flag_paint = false;
     private Bitmap bitmap;
     private int mImageWidth, mImageHeight;
     private float mPositionX;
@@ -30,8 +28,8 @@ public class PinchZoomPan extends View {
     private float mLastTouchX;
     private Path path = new Path();
     private Paint brush = new Paint();
-    private int color = Color.WHITE;
-    private float brushwidth = 10f;
+    private int color = Color.BLACK;
+    private float brushwidth = 12f;
 
     //Pinch Zoom in and out objects
     private float mLastTouchY;
@@ -39,14 +37,21 @@ public class PinchZoomPan extends View {
     private ScaleGestureDetector mScaleDetector;
     private float mScaleFactor = 1.0f;
 
+    //Capture last touch
+    private float lasttouchx, lasttouchy;
+
+    //For Paint selection
+
+    private boolean paintflag = false;
+
     public PinchZoomPan(Context context) {
         super(context);
+
     }
 
     public PinchZoomPan(Context context, AttributeSet attrs) {
         super(context, attrs);
         setDrawingCacheEnabled(true);
-
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 
        /* brush.setAntiAlias(true);
@@ -62,19 +67,23 @@ public class PinchZoomPan extends View {
         float pixelAmount = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, newSize, getResources().getDisplayMetrics());
         brushwidth = pixelAmount;
         setBrushproperties();
+        invalidate();
     }
 
     public void setBrushColor(int color) {
         this.color = color;
         setBrushproperties();
+        invalidate();
     }
 
     public void setFlag_paint() {
-        flag_paint = true;
+        paintflag = true;
+        postInvalidate();
     }
 
     public void setFlag_paintoff() {
-        flag_paint = false;
+        paintflag = false;
+        postInvalidate();
     }
 
     public void setBrushproperties() {
@@ -89,25 +98,19 @@ public class PinchZoomPan extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        if (bitmap != null && !flag_paint) {
+        if (bitmap != null) {
             canvas.save();
-            canvas.translate(mPositionX, mPositionY);
+            if (paintflag)
+                canvas.drawPath(path, brush);
+            else {
+                canvas.translate(mPositionX, mPositionY);
+            }
             canvas.scale(mScaleFactor, mScaleFactor);
-            canvas.drawBitmap(bitmap, 0, 0, null);
-
-        }
-        if (flag_paint) {
-            canvas.drawPath(path, brush);
-            canvas.translate(0,0);
-            canvas.scale(0,0);
-            canvas.save();
-            canvas.drawBitmap(bitmap, 0, 0, null);
+            canvas.drawBitmap(bitmap, 0, 0, brush);
+            canvas.restore();
         }
 
-        canvas.restore();
     }
-
 
     public void loadImageOnCanvas(Bitmap rotateBitmap) {
 
@@ -134,57 +137,47 @@ public class PinchZoomPan extends View {
             case MotionEvent.ACTION_DOWN: {
 
                 //Paint objects
-                if (flag_paint) {
+                if (paintflag)
                     path.moveTo(pointX, pointY);
-                }
+
                 //get x and y coordinates of where we touch on the screen
-
-                else {
-                    final float x = event.getX();
-                    final float y = event.getY();
-
-                    //remember where touch event started
-
-                    mLastTouchX = x;
-                    mLastTouchY = y;
-
-                    //save the ID of this pointer
-                    mActivePointerID = event.getPointerId(0);
-                }
-
+                final float x = event.getX();
+                final float y = event.getY();
+                //remember where touch event started
+                mLastTouchX = x;
+                mLastTouchY = y;
+                //save the ID of this pointer
+                mActivePointerID = event.getPointerId(0);
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-
-                if (flag_paint) {
+                if (paintflag)
                     path.lineTo(pointX, pointY);
-                } else {
 
-                    //Find the index of the active pointer and find the position
-                    final int pointerIndex = event.findPointerIndex(mActivePointerID);
+                //Find the index of the active pointer and find the position
+                final int pointerIndex = event.findPointerIndex(mActivePointerID);
 
-                    final float x = event.getX(pointerIndex);
-                    final float y = event.getY(pointerIndex);
+                final float x = event.getX(pointerIndex);
+                final float y = event.getY(pointerIndex);
 
-                    if (!mScaleDetector.isInProgress()) {
+                if (!mScaleDetector.isInProgress()) {
 
 
-                        final float distanceX = x - mLastTouchX;
-                        final float distanceY = y - mLastTouchY;
+                    final float distanceX = x - mLastTouchX;
+                    final float distanceY = y - mLastTouchY;
 
-                        mPositionX += distanceX;
-                        mPositionY += distanceY;
+                    mPositionX += distanceX;
+                    mPositionY += distanceY;
 
-                        //redraw canva call
-                        invalidate();
-
-                    }
-                    //remember this touch event for next movement
-
-                    mLastTouchX = x;
-                    mLastTouchY = y;
+                    //redraw canva call
+                    invalidate();
 
                 }
+                //remember this touch event for next movement
+
+                mLastTouchX = x;
+                mLastTouchY = y;
+
                 break;
             }
 
@@ -228,4 +221,5 @@ public class PinchZoomPan extends View {
             return true;
         }
     }
+
 }

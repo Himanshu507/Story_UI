@@ -1,32 +1,37 @@
 package com.hoax.story_ui;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShowCaptureActivity extends AppCompatActivity {
 
     protected PinchZoomPan pinchZoomPan;
+    private static final int REQUEST_CODE = 43;
     RecyclerView list;
     float smallbrush, mediumbrush, largebrush;
     List<Integer> colors = new ArrayList<Integer>();
-    private ImageView brush;
     LinearLayout linearLayout;
-    ImageView white,yellow,purple,black,orange,red,cyan,grey;
+    ImageView white, yellow, purple, black, orange, red, cyan, grey;
+    private ImageView brush;
+    File file;
+    Uri fileuri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,7 @@ public class ShowCaptureActivity extends AppCompatActivity {
             colors.add(newColor);
         }
 
-        linearLayout = findViewById(R.id.penColors);
+       /* linearLayout = findViewById(R.id.penColors);
         cyan = findViewById(R.id.colors_Cyan);
         cyan.setBackgroundColor(colors.get(2));
         orange = findViewById(R.id.colors_Orange);
@@ -77,13 +82,33 @@ public class ShowCaptureActivity extends AppCompatActivity {
         black.setBackgroundColor(colors.get(1));
         grey = findViewById(R.id.colors_grey);
         grey.setBackgroundColor(colors.get(11));
-        //list = findViewById(R.id.colors_recycle);
+        //list = findViewById(R.id.colors_recycle);*/
 
     }
 
 
     public void PainColorchooser(View view) {
-        linearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void startSearch(){
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("image/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent,REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            if (data!=null){
+                Uri uri = data.getData();
+                fileuri = uri;
+                file = new File(uri.getPath());
+            }
+        }
+
     }
 
 
@@ -100,15 +125,21 @@ public class ShowCaptureActivity extends AppCompatActivity {
 
     }
 
-    public void Downloades(View view) {
-        PinchZoomPan pinchZoomPan = new PinchZoomPan(this);
+    public void UploadImage(View view) {
+        /*PinchZoomPan pinchZoomPan = new PinchZoomPan(this);
         pinchZoomPan.setBrushSize(15f);
         pinchZoomPan.setBrushColor(Color.CYAN);
-        pinchZoomPan.setFlag_paint();
-        Toast.makeText(this,"Something hits",Toast.LENGTH_LONG).show();
+        pinchZoomPan.setFlag_paint();*/
+        startSearch();
+       // Toast.makeText(this, "Something hits", Toast.LENGTH_LONG).show();
     }
 
     public void cancel(View view) {
         onBackPressed();
     }
+
+    public void penChooser(View view){
+        pinchZoomPan.setFlag_paint();
+    }
+
 }
