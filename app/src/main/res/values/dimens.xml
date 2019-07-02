@@ -22,4 +22,9 @@
     <dimen name="stillshot_widget_margin_sides_bottom">10dp</dimen>
     <dimen name="stillshot_widget_margin_top">10dp</dimen>
     <dimen name="stillshot_widget_margin_bottom">4dp</dimen>
+
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="editor_size">35dp</dimen>
+    <dimen name="normal_margin">8dp</dimen>
+    <dimen name="large_margin">16dp</dimen>
 </resources>
