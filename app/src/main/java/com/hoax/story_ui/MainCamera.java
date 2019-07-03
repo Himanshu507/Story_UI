@@ -61,7 +61,7 @@ public class MainCamera extends AppCompatActivity implements SurfaceHolder.Callb
         jpegCallback = new Camera.PictureCallback(){
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
-                Intent intent = new Intent(getApplicationContext(),EditImageActivity.class);
+                Intent intent = new Intent(getApplicationContext(),Post_edit.class);
                 intent.putExtra("capture", data);
                 startActivity(intent);
                 return;

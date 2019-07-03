@@ -54,10 +54,10 @@
             android:id="@+id/text"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:onClick="textset"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="50dp"
+            android:onClick="textset"
             android:src="@drawable/text" />
 
         <ImageView
@@ -66,8 +66,8 @@
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="0dp"
-            android:onClick="paintstar"
             android:layout_marginEnd="95dp"
+            android:onClick="paintstar"
             android:scaleType="centerInside"
             android:src="@drawable/pen" />
 
@@ -170,7 +170,6 @@
         tools:listitem="@layout/row_filter_view" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/txtCurrentTool"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -179,18 +178,19 @@
         android:singleLine="true"
         android:text="@string/app_name"
         android:textColor="@android:color/white"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline" />
 
     <ImageView
-        android:visibility="gone"
         android:id="@+id/imgSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:src="@drawable/ic_save"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline" />
@@ -224,8 +224,8 @@
         android:layout_marginBottom="13dp"
         android:background="@drawable/round_button"
         android:text="SEND  >"
-        android:textStyle="bold"
         android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />

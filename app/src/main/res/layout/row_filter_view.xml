@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:layout_margin="2dp">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:padding="10dp"
         android:id="@+id/imgFilterView"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -18,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@tools:sample/backgrounds/scenic" />
 
-    <TextView
+   <!-- <TextView
         android:id="@+id/txtFilterName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -30,6 +31,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/imgFilterView"
         app:layout_constraintEnd_toEndOf="@+id/imgFilterView"
         app:layout_constraintStart_toStartOf="@+id/imgFilterView"
-        tools:text="@tools:sample/full_names" />
+        tools:text="@tools:sample/full_names" />-->
 
 </android.support.constraint.ConstraintLayout>

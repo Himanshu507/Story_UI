@@ -85,7 +85,6 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         initViews();
 
         mWonderFont = Typeface.createFromAsset(getAssets(), "beyond_wonderland.ttf");
-
         mPropertiesBSFragment = new PropertiesBSFragment();
         mEmojiBSFragment = new EmojiBSFragment();
         mStickerBSFragment = new StickerBSFragment();
