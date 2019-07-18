@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,6 +21,35 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/color_recycle"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp" />
+
+        <com.hoax.story_ui.VerticalSeekBar
+            android:id="@+id/brush_width"
+            android:layout_width="wrap_content"
+            android:layout_height="220dp"
+            android:layout_marginTop="130dp"
+            android:layout_marginLeft="3dp"
+            android:thumb="@drawable/thumb_background"
+            android:background="@drawable/triangle"
+            android:progressDrawable="@drawable/background_progress"
+            android:layout_marginBottom="60dp"
+            android:progress="50"/>
+
+        <ImageView
+            android:id="@+id/color_show"
+            android:layout_marginRight="-15dp"
+            android:src="@drawable/color_button"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/sender_image"
@@ -129,46 +157,6 @@
 
     </RelativeLayout>
 
-    <!--<ImageView
-        android:id="@+id/imgClose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="8dp"
-        android:src="@drawable/ic_close"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline" />-->
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvConstraintTools"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/tool_bg"
-        android:orientation="horizontal"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:visibility="gone"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/row_editing_tools" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvFilterView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/tool_bg"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="@+id/rvConstraintTools"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/rvConstraintTools"
-        tools:listitem="@layout/row_filter_view" />
-
     <TextView
         android:id="@+id/txtCurrentTool"
         android:layout_width="wrap_content"
@@ -229,5 +217,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
+
 
 </android.support.constraint.ConstraintLayout>

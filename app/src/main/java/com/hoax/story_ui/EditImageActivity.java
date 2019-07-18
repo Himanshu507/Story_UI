@@ -14,28 +14,23 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
-import android.support.transition.ChangeBounds;
-import android.support.transition.TransitionManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.hoax.story_ui.base.BaseActivity;
 import com.hoax.story_ui.filters.FilterListener;
-import com.hoax.story_ui.filters.FilterViewAdapter;
 import com.hoax.story_ui.tools.EditingToolsAdapter;
 import com.hoax.story_ui.tools.ToolType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
+import cdflynn.android.library.turn.TurnLayoutManager;
 import ja.burhanrashid52.photoeditor.OnPhotoEditorListener;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
@@ -46,20 +41,22 @@ import ja.burhanrashid52.photoeditor.ViewType;
 
 public class EditImageActivity extends BaseActivity implements OnPhotoEditorListener,
         View.OnClickListener,
-        PropertiesBSFragment.Properties,
-        EmojiBSFragment.EmojiListener,
-        StickerBSFragment.StickerListener, EditingToolsAdapter.OnItemSelected, FilterListener {
+        EditingToolsAdapter.OnItemSelected, FilterListener {
+
 
     public static final String EXTRA_IMAGE_PATHS = "extra_image_paths";
     private static final String TAG = EditImageActivity.class.getSimpleName();
     private static final int CAMERA_REQUEST = 52;
     private static final int PICK_REQUEST = 53;
+    public RecyclerView color_recycle;
     ImageView imgUndo;
     ImageView imgRedo;
     ImageView imgCamera;
     ImageView imgGallery;
     ImageView imgSave;
     ImageView imgClose;
+    TurnLayoutManager layoutManager;
+    VerticalSeekBar seekBar;
     private PhotoEditor mPhotoEditor;
     private PhotoEditorView mPhotoEditorView;
     private PropertiesBSFragment mPropertiesBSFragment;
@@ -67,15 +64,14 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private StickerBSFragment mStickerBSFragment;
     private TextView mTxtCurrentTool;
     private Typeface mWonderFont;
-    private RecyclerView mRvTools, mRvFilters;
-
     //Views
-    private EditingToolsAdapter mEditingToolsAdapter = new EditingToolsAdapter(this);
-    private FilterViewAdapter mFilterViewAdapter = new FilterViewAdapter(this);
     private ConstraintLayout mRootView;
     private ConstraintSet mConstraintSet = new ConstraintSet();
     private boolean mIsFilterVisible;
     private boolean mIsUpload = true;
+    private PropertiesBSFragment.Properties mProperties;
+    private ImageView color_show;
+    private int prog = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,25 +80,8 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         setContentView(R.layout.activity_edit_image);
         initViews();
 
-        mWonderFont = Typeface.createFromAsset(getAssets(), "beyond_wonderland.ttf");
-        mPropertiesBSFragment = new PropertiesBSFragment();
-        mEmojiBSFragment = new EmojiBSFragment();
-        mStickerBSFragment = new StickerBSFragment();
-        mStickerBSFragment.setStickerListener(this);
-        mEmojiBSFragment.setEmojiListener(this);
-        mPropertiesBSFragment.setPropertiesChangeListener(this);
+//        mPropertiesBSFragment.setPropertiesChangeListener(this);
 
-        LinearLayoutManager llmTools = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mRvTools.setLayoutManager(llmTools);
-        mRvTools.setAdapter(mEditingToolsAdapter);
-
-        LinearLayoutManager llmFilters = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mRvFilters.setLayoutManager(llmFilters);
-        mRvFilters.setAdapter(mFilterViewAdapter);
-
-
-        //Typeface mTextRobotoTf = ResourcesCompat.getFont(this, R.font.roboto_medium);
-        //Typeface mEmojiTypeFace = Typeface.createFromAsset(getAssets(), "emojione-android.ttf");
 
         mPhotoEditor = new PhotoEditor.Builder(this, mPhotoEditorView)
                 .setPinchTextScalable(true) // set flag to make text scalable when pinch
@@ -120,8 +99,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
         mPhotoEditorView = findViewById(R.id.photoEditorView);
         mTxtCurrentTool = findViewById(R.id.txtCurrentTool);
-        mRvTools = findViewById(R.id.rvConstraintTools);
-        mRvFilters = findViewById(R.id.rvFilterView);
+
         mRootView = findViewById(R.id.rootView);
 
         imgUndo = findViewById(R.id.imgUndo);
@@ -141,6 +119,15 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
         imgClose = findViewById(R.id.imgClose);
         imgClose.setOnClickListener(this);
+
+        color_recycle = findViewById(R.id.color_recycle);
+        color_recycle.setVisibility(View.GONE);
+
+        seekBar = findViewById(R.id.brush_width);
+        seekBar.setVisibility(View.GONE);
+
+        color_show = findViewById(R.id.color_show);
+        color_show.setVisibility(View.GONE);
 
     }
 
@@ -281,37 +268,6 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     }
 
     @Override
-    public void onColorChanged(int colorCode) {
-        mPhotoEditor.setBrushColor(colorCode);
-        mTxtCurrentTool.setText(R.string.label_brush);
-    }
-
-    @Override
-    public void onOpacityChanged(int opacity) {
-        mPhotoEditor.setOpacity(opacity);
-        mTxtCurrentTool.setText(R.string.label_brush);
-    }
-
-    @Override
-    public void onBrushSizeChanged(int brushSize) {
-        mPhotoEditor.setBrushSize(brushSize);
-        mTxtCurrentTool.setText(R.string.label_brush);
-    }
-
-    @Override
-    public void onEmojiClick(String emojiUnicode) {
-        mPhotoEditor.addEmoji(emojiUnicode);
-        mTxtCurrentTool.setText(R.string.label_emoji);
-
-    }
-
-    @Override
-    public void onStickerClick(Bitmap bitmap) {
-        mPhotoEditor.addImage(bitmap);
-        mTxtCurrentTool.setText(R.string.label_sticker);
-    }
-
-    @Override
     public void isPermissionGranted(boolean isGranted, String permission) {
         if (isGranted) {
             saveImage();
@@ -355,7 +311,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
             case BRUSH:
                 mPhotoEditor.setBrushDrawingMode(true);
                 mTxtCurrentTool.setText(R.string.label_brush);
-                mPropertiesBSFragment.show(getSupportFragmentManager(), mPropertiesBSFragment.getTag());
+                // mPropertiesBSFragment.show(getSupportFragmentManager(), mPropertiesBSFragment.getTag());
                 break;
             case TEXT:
                 TextEditorDialogFragment textEditorDialogFragment = TextEditorDialogFragment.show(this);
@@ -374,47 +330,14 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                 mPhotoEditor.brushEraser();
                 mTxtCurrentTool.setText(R.string.label_eraser);
                 break;
-            case FILTER:
-                mTxtCurrentTool.setText(R.string.label_filter);
-                showFilter(true);
-                break;
-            case EMOJI:
-                mEmojiBSFragment.show(getSupportFragmentManager(), mEmojiBSFragment.getTag());
-                break;
-            case STICKER:
-                mStickerBSFragment.show(getSupportFragmentManager(), mStickerBSFragment.getTag());
-                break;
+
         }
-    }
-
-    void showFilter(boolean isVisible) {
-        mIsFilterVisible = isVisible;
-        mConstraintSet.clone(mRootView);
-
-        if (isVisible) {
-            mConstraintSet.clear(mRvFilters.getId(), ConstraintSet.START);
-            mConstraintSet.connect(mRvFilters.getId(), ConstraintSet.START,
-                    ConstraintSet.PARENT_ID, ConstraintSet.START);
-            mConstraintSet.connect(mRvFilters.getId(), ConstraintSet.END,
-                    ConstraintSet.PARENT_ID, ConstraintSet.END);
-        } else {
-            mConstraintSet.connect(mRvFilters.getId(), ConstraintSet.START,
-                    ConstraintSet.PARENT_ID, ConstraintSet.END);
-            mConstraintSet.clear(mRvFilters.getId(), ConstraintSet.END);
-        }
-
-        ChangeBounds changeBounds = new ChangeBounds();
-        changeBounds.setDuration(350);
-        changeBounds.setInterpolator(new AnticipateOvershootInterpolator(1.0f));
-        TransitionManager.beginDelayedTransition(mRootView, changeBounds);
-
-        mConstraintSet.applyTo(mRootView);
     }
 
     @Override
     public void onBackPressed() {
         if (mIsFilterVisible) {
-            showFilter(false);
+            /*showFilter(false);*/
             mTxtCurrentTool.setText(R.string.app_name);
         } else if (!mPhotoEditor.isCacheEmpty()) {
             showSaveDialog();
@@ -442,7 +365,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
             imgCamera.setVisibility(View.VISIBLE);
             imgGallery.setVisibility(View.VISIBLE);
             mIsUpload = false;
-        }else {
+        } else {
             imgCamera.setVisibility(View.GONE);
             imgGallery.setVisibility(View.GONE);
             mIsUpload = true;
@@ -450,24 +373,69 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
     }
 
-    public void paintstar(View view){
+    public void paintstar(View view) {
         mPhotoEditor.setBrushDrawingMode(true);
         mTxtCurrentTool.setText(R.string.label_brush);
-        mPropertiesBSFragment.show(getSupportFragmentManager(), mPropertiesBSFragment.getTag());
+        //mPropertiesBSFragment.show(getSupportFragmentManager(), mPropertiesBSFragment.getTag());
+        layoutManager = new TurnLayoutManager(getApplicationContext(),
+                TurnLayoutManager.Gravity.END,
+                TurnLayoutManager.Orientation.VERTICAL,
+                655,
+                73,
+                false);
+        seekBar.setVisibility(View.VISIBLE);
+        color_recycle.setVisibility(View.VISIBLE);
+        color_recycle.setLayoutManager(layoutManager);
+        final ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(getApplicationContext());
+        colorPickerAdapter.setOnColorPickerClickListener(new ColorPickerAdapter.OnColorPickerClickListener() {
+            @Override
+            public void onColorPickerClickListener(int colorCode) {
+                mPhotoEditor.setBrushColor(colorCode);
+                final float translateX = color_recycle.getTranslationX() == 0 ? color_recycle.getWidth() : 0;
+                color_recycle.animate().translationX(translateX).start();
+                color_show.setVisibility(View.VISIBLE);
+            }
+        });
+        color_recycle.setAdapter(colorPickerAdapter);
+
+        color_show.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final float translateX = color_recycle.getTranslationX() == 0 ? color_recycle.getWidth() : 0;
+                color_recycle.animate().translationX(translateX).start();
+                color_show.setVisibility(View.GONE);
+            }
+        });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mPhotoEditor.setBrushSize(progress);
+                prog = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
 
     }
 
 
-    public void textset(View view){
+    public void textset(View view) {
         TextEditorDialogFragment textEditorDialogFragment = TextEditorDialogFragment.show(this);
         textEditorDialogFragment.setOnTextEditorListener(new TextEditorDialogFragment.TextEditor() {
             @Override
             public void onDone(String inputText, int colorCode) {
                 final TextStyleBuilder styleBuilder = new TextStyleBuilder();
                 styleBuilder.withTextColor(colorCode);
-
                 mPhotoEditor.addText(inputText, styleBuilder);
-                mTxtCurrentTool.setText(R.string.label_text);
             }
         });
     }

@@ -2,6 +2,8 @@ package com.hoax.story_ui;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -48,7 +50,9 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.colorPickerView.setBackgroundColor(colorPickerColors.get(position));
+        Drawable mDrawable = ContextCompat.getDrawable(context, R.drawable.colors_item_background);
+        mDrawable.setColorFilter(new PorterDuffColorFilter(colorPickerColors.get(position), PorterDuff.Mode.MULTIPLY));
+        holder.colorPickerView.setBackground(mDrawable);
     }
 
     @Override
@@ -104,6 +108,7 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
 
     public static List<Integer> getDefaultColors(Context context) {
         ArrayList<Integer> colorPickerColors = new ArrayList<>();
+        colorPickerColors.add(ContextCompat.getColor(context, R.color.trans));
         colorPickerColors.add(ContextCompat.getColor(context, R.color.blue_color_picker));
         colorPickerColors.add(ContextCompat.getColor(context, R.color.brown_color_picker));
         colorPickerColors.add(ContextCompat.getColor(context, R.color.green_color_picker));
@@ -116,6 +121,25 @@ public class ColorPickerAdapter extends RecyclerView.Adapter<ColorPickerAdapter.
         colorPickerColors.add(ContextCompat.getColor(context, R.color.white));
         colorPickerColors.add(ContextCompat.getColor(context, R.color.yellow_color_picker));
         colorPickerColors.add(ContextCompat.getColor(context, R.color.yellow_green_color_picker));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light1));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light2));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light3));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light4));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light5));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light6));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light7));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light8));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light9));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light11));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light12));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light13));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light14));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light5));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light9));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.green_light7));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.ripple));
+        colorPickerColors.add(ContextCompat.getColor(context,R.color.egg));
+        colorPickerColors.add(ContextCompat.getColor(context, R.color.trans));
         return colorPickerColors;
     }
 }

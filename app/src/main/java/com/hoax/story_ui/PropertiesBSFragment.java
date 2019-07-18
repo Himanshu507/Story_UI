@@ -11,7 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
+import cdflynn.android.library.turn.TurnLayoutManager;
+
 public class PropertiesBSFragment extends BottomSheetDialogFragment implements SeekBar.OnSeekBarChangeListener {
+
+
 
     public PropertiesBSFragment() {
         // Required empty public constructor
@@ -30,6 +34,7 @@ public class PropertiesBSFragment extends BottomSheetDialogFragment implements S
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
     }
 
     @Override
@@ -44,10 +49,19 @@ public class PropertiesBSFragment extends BottomSheetDialogFragment implements S
         SeekBar sbOpacity = view.findViewById(R.id.sbOpacity);
         SeekBar sbBrushSize = view.findViewById(R.id.sbSize);
 
+        TurnLayoutManager layoutManager;
+
+        layoutManager = new TurnLayoutManager(getContext(),
+                TurnLayoutManager.Gravity.END,
+                TurnLayoutManager.Orientation.HORIZONTAL,
+                655,
+                73,
+                false);
+
         sbOpacity.setOnSeekBarChangeListener(this);
         sbBrushSize.setOnSeekBarChangeListener(this);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        //LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         rvColor.setLayoutManager(layoutManager);
         rvColor.setHasFixedSize(true);
         ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(getActivity());
@@ -85,7 +99,6 @@ public class PropertiesBSFragment extends BottomSheetDialogFragment implements S
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
     }
 
     @Override
